@@ -7,6 +7,19 @@ from .models import Product
 from .models import ProductCategory
 from .models import Restaurant
 from .models import RestaurantMenuItem
+from .models import Client
+from .models import Order
+from .models import OrderPoint
+
+
+class OrderInline(admin.StackedInline):
+    model = Order
+    extra = 0
+
+
+class OrderPointInline(admin.StackedInline):
+    model = OrderPoint
+    extra = 0
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -104,3 +117,18 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(ProductCategory)
 class ProductAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(Client)
+class ClientAdmin(admin.ModelAdmin):
+    inlines = [OrderInline]
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    readonly_fields = ['client', 'get_phonenumber', 'delivery_address']
+    inlines = [OrderPointInline]
+
+    @admin.display(description='Номер телефона')
+    def get_phonenumber(self, obj):
+        return obj.client.contact_phone
