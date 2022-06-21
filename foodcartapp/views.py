@@ -3,6 +3,8 @@ import json
 import phonenumbers
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .models import Client, Order, OrderPoint, Product
 
@@ -59,8 +61,9 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 def register_order(request):
-    deserialized_order = json.loads(request.body.decode())
+    deserialized_order = request.data
 
     phone = phonenumbers.parse(
         deserialized_order['phonenumber'], 'RU')
@@ -70,7 +73,7 @@ def register_order(request):
     else:
         normalized_phonenumber = ''
 
-    client = Client.objects.create(
+    client, _ = Client.objects.get_or_create(
         firstname=deserialized_order['firstname'],
         lastname=deserialized_order['lastname'],
         contact_phone=normalized_phonenumber
@@ -87,4 +90,4 @@ def register_order(request):
             quantity=product['quantity'],
             order=order
         )
-    return JsonResponse({})
+    return Response({'order': deserialized_order})
