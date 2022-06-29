@@ -1,12 +1,12 @@
-import json
-
-import phonenumbers
 from django.http import JsonResponse
 from django.templatetags.static import static
-from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import Client, Order, OrderPoint, Product
+from .models import Order, Product
+from .serializers import ClientSerializer, OrderSerializer, \
+    OrderPointSerializer
 
 
 def banners_list_api(request):
@@ -61,33 +61,32 @@ def product_list_api(request):
     })
 
 
-@api_view(['POST'])
-def register_order(request):
-    deserialized_order = request.data
+class RegisterOrderAPIView(APIView):
+    def get(self, request):
+        orders = Order.objects.all()
+        orders_serializer = OrderSerializer(orders, many=True)
+        return Response({'orders': orders_serializer.data})
 
-    phone = phonenumbers.parse(
-        deserialized_order['phonenumber'], 'RU')
-    if phonenumbers.is_valid_number(
-        phone) and phonenumbers.is_possible_number(phone):
-        normalized_phonenumber = phone
-    else:
-        normalized_phonenumber = ''
+    def post(self, request):
+        client_serializer = ClientSerializer(data=request.data)
+        client_serializer.is_valid(raise_exception=True)
 
-    client, _ = Client.objects.get_or_create(
-        firstname=deserialized_order['firstname'],
-        lastname=deserialized_order['lastname'],
-        contact_phone=normalized_phonenumber
-    )
+        order_serializer = OrderSerializer(data=request.data)
+        order_serializer.is_valid(raise_exception=True)
 
-    order = Order.objects.create(
-        client=client,
-        delivery_address=deserialized_order['address']
-    )
+        products = request.data.get('products', [])
+        if isinstance(products, str):
+            raise ValidationError(
+                'products: expected list field with values, got str.')
+        elif not products:
+            raise ValidationError(
+                'products: field required and must be not empty.')
+        client = client_serializer.save()
+        order = order_serializer.save(client=client)
 
-    for product in deserialized_order['products']:
-        OrderPoint.objects.create(
-            product=Product.objects.get(pk=product['product']),
-            quantity=product['quantity'],
-            order=order
-        )
-    return Response({'order': deserialized_order})
+        for product in products:
+            order_point = OrderPointSerializer(data=product)
+            order_point.is_valid(raise_exception=True)
+            order_point.save(order=order)
+
+        return Response({'order': order_serializer.data})

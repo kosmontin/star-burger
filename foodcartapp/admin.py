@@ -126,9 +126,9 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    readonly_fields = ['client', 'get_phonenumber', 'delivery_address']
+    readonly_fields = ['client', 'get_phonenumber', 'address']
     inlines = [OrderPointInline]
 
     @admin.display(description='Номер телефона')
     def get_phonenumber(self, obj):
-        return obj.client.contact_phone
+        return obj.client.phonenumber

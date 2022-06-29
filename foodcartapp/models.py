@@ -1,6 +1,5 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Restaurant(models.Model):
@@ -129,8 +128,8 @@ class Client(models.Model):
     lastname = models.CharField(
         verbose_name='Фамилия', max_length=50, db_index=True)
 
-    contact_phone = PhoneNumberField(
-        db_index=True, verbose_name='телефон для связи')
+    phonenumber = models.CharField(
+        db_index=True, max_length=20, verbose_name='телефон для связи')
 
     class Meta:
         verbose_name = 'Клиент'
@@ -144,7 +143,7 @@ class Order(models.Model):
     client = models.ForeignKey(
         Client, on_delete=models.SET_NULL, null=True,
         related_name='orders', verbose_name='клиент')
-    delivery_address = models.TextField(
+    address = models.TextField(
         db_index=True, verbose_name='адрес доставки заказа')
 
     class Meta:
