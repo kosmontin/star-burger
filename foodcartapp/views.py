@@ -81,12 +81,12 @@ class RegisterOrderAPIView(APIView):
         elif not products:
             raise ValidationError(
                 'products: field required and must be not empty.')
+
+        order_points = OrderPointSerializer(data=products, many=True)
+        order_points.is_valid(raise_exception=True)
+
         client = client_serializer.save()
         order = order_serializer.save(client=client)
-
-        for product in products:
-            order_point = OrderPointSerializer(data=product)
-            order_point.is_valid(raise_exception=True)
-            order_point.save(order=order)
+        order_points.save(order=order)
 
         return Response({'order': order_serializer.data})
