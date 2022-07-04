@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Sum, F
 
 
 class Restaurant(models.Model):
@@ -139,12 +140,20 @@ class Client(models.Model):
         return f'{self.firstname} {self.lastname}'
 
 
+class OrderQuerySet(models.QuerySet):
+    def total_cost(self):
+        return self.annotate(
+            total_cost=Sum(F('items__quantity') * F('items__product__price')))
+
+
 class Order(models.Model):
     client = models.ForeignKey(
         Client, on_delete=models.SET_NULL, null=True,
         related_name='orders', verbose_name='клиент')
     address = models.TextField(
         db_index=True, verbose_name='адрес доставки заказа')
+
+    objects = OrderQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Заказ'
