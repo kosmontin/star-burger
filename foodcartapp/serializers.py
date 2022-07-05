@@ -26,9 +26,11 @@ class ClientSerializer(ModelSerializer):
 class OrderPointSerializer(ModelSerializer):
     class Meta:
         model = OrderPoint
-        fields = ('product', 'quantity')
+        fields = ('product', 'quantity', 'price')
 
     def create(self, validated_data):
+        validated_data['price'] = validated_data['product'].price
+
         return OrderPoint.objects.create(**validated_data)
 
 

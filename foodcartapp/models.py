@@ -143,7 +143,7 @@ class Client(models.Model):
 class OrderQuerySet(models.QuerySet):
     def total_cost(self):
         return self.annotate(
-            total_cost=Sum(F('items__quantity') * F('items__product__price')))
+            total_cost=Sum(F('items__quantity') * F('items__price')))
 
 
 class Order(models.Model):
@@ -167,6 +167,10 @@ class OrderPoint(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.SET_NULL, null=True,
         related_name='orders', verbose_name='товар')
+    price = models.DecimalField(
+        max_digits=8, decimal_places=2,
+        validators=[MinValueValidator(0), ],
+        default=0, verbose_name='цена')
     quantity = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(20)],
         default=1, verbose_name='количество')
