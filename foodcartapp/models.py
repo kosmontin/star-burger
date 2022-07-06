@@ -147,6 +147,15 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
+    ORDER_STATUS = [
+        ('New', 'Необработанный'),
+        ('Processing', 'Собирается'),
+        ('Delivering', 'Доставляется'),
+        ('Done', 'Завершенный')
+    ]
+    status = models.CharField(
+        max_length=15, choices=ORDER_STATUS, db_index=True,
+        default='New', verbose_name='статус заказа')
     client = models.ForeignKey(
         Client, on_delete=models.SET_NULL, null=True,
         related_name='orders', verbose_name='клиент')
