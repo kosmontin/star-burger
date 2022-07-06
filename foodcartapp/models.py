@@ -154,6 +154,11 @@ class Order(models.Model):
         ('Delivering', 'Доставляется'),
         ('Done', 'Завершенный')
     ]
+    PAYMENT_METHOD = [
+        ('undefined', 'Не определен'),
+        ('cash', 'Наличные'),
+        ('card', 'Карта')
+    ]
     registered_at = models.DateTimeField(
         default=timezone.now, db_index=True, verbose_name='создан')
     called_at = models.DateTimeField(
@@ -163,6 +168,9 @@ class Order(models.Model):
     status = models.CharField(
         max_length=15, choices=ORDER_STATUS, db_index=True,
         default='New', verbose_name='статус заказа')
+    payment_method = models.CharField(
+        max_length=15, choices=PAYMENT_METHOD, db_index=True,
+        default='undefined', verbose_name='способ оплаты')
     client = models.ForeignKey(
         Client, on_delete=models.SET_NULL, null=True,
         related_name='orders', verbose_name='клиент')

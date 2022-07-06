@@ -39,8 +39,8 @@ class OrderSerializer(ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'registered_at', 'called_at', 'delivered_at',
-                  'status', 'address', 'comment', 'client', 'items')
+        fields = ('id', 'registered_at', 'called_at', 'delivered_at', 'status',
+                  'payment_method', 'address', 'comment', 'client', 'items')
         depth = 1
 
     def create(self, validated_data):
