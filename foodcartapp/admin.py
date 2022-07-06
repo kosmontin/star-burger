@@ -129,7 +129,9 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    readonly_fields = ['client', 'get_phonenumber', 'address']
+    fields = ('status', 'registered_at', 'called_at', 'delivered_at',
+              'client', 'get_phonenumber', 'address', 'comment')
+    readonly_fields = ['registered_at', 'client', 'get_phonenumber', 'address']
     inlines = [OrderPointInline]
 
     @admin.display(description='Номер телефона')
