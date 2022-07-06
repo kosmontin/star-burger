@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.exceptions import ValidationError
@@ -85,8 +86,9 @@ class RegisterOrderAPIView(APIView):
         order_points = OrderPointSerializer(data=products, many=True)
         order_points.is_valid(raise_exception=True)
 
-        client = client_serializer.save()
-        order = order_serializer.save(client=client)
-        order_points.save(order=order)
+        with transaction.atomic():
+            client = client_serializer.save()
+            order = order_serializer.save(client=client)
+            order_points.save(order=order)
 
         return Response({'order': order_serializer.data})
