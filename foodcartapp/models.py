@@ -178,6 +178,11 @@ class Order(models.Model):
         db_index=True, verbose_name='адрес доставки заказа')
     comment = models.TextField(null=True, blank=True,
                                verbose_name='комментарий')
+    which_restaurant_doing = models.ForeignKey(
+        Restaurant, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='processed_orders',
+        verbose_name='какой ресторан готовит заказ'
+    )
 
     objects = OrderQuerySet.as_manager()
 

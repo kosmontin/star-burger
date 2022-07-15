@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.templatetags.static import static
@@ -129,9 +130,10 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    fields = ('status', 'registered_at', 'called_at',
+    fields = ('status', 'which_restaurant_doing', 'registered_at', 'called_at',
               'delivered_at', 'payment_method', 'client',
               'get_phonenumber', 'address', 'comment')
+    radio_fields = {'status': admin.VERTICAL}
     readonly_fields = ['registered_at', 'client', 'get_phonenumber', 'address']
     inlines = [OrderPointInline]
 
@@ -146,3 +148,12 @@ class OrderAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(request.GET['next'])
         else:
             return res
+
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        form = super(OrderAdmin, self).get_form(request, obj, **kwargs)
+        qs = Restaurant.objects.filter(
+            menu_items__product_id__in=obj.items.values('product')).annotate(
+            rest_counter=Count('menu_items__restaurant_id')).filter(
+            rest_counter__gte=obj.items.count())
+        form.base_fields['which_restaurant_doing'].queryset = qs
+        return form
