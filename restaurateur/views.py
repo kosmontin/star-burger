@@ -1,3 +1,5 @@
+import requests
+from geopy import distance
 from django import forms
 from django.shortcuts import redirect, render
 from django.views import View
@@ -6,6 +8,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
+from django.conf import settings
 
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
@@ -97,22 +100,60 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    menu = list(RestaurantMenuItem.objects.filter(
-        availability=True).values('product_id', 'restaurant__name'))
+    menu = list(RestaurantMenuItem.objects.filter(availability=True).values(
+        'product_id', 'restaurant__name', 'restaurant__address'))
 
     orders = Order.objects.total_cost().exclude(
         status='Done').prefetch_related('client', 'items')
     for order in orders:
+        valid_order_coordinates = fetch_coordinates(order.address)
         if order.status == 'New':
-            rests = dict()
+            available_rests = dict()
             for order_product in order.items.all():
                 for menu_item in menu:
                     if order_product.product_id == menu_item['product_id']:
-                        rests[menu_item['restaurant__name']] = rests.get(
-                            menu_item['restaurant__name'], 0) + 1
-            order.restaurants = [rest for rest, counter in rests.items() if
-                                 counter >= order.items.count()]
+                        available_rests.setdefault(
+                            menu_item['restaurant__name'],
+                            [0, menu_item['restaurant__address']])
+                        available_rests[menu_item['restaurant__name']][0] += 1
+
+            restaurants_who_can_do = []
+            if valid_order_coordinates:
+                for rest, values in available_rests.items():
+                    rest_coordinates = fetch_coordinates(values[1])
+                    if values[0] == order.items.count():
+                        restaurants_who_can_do.append({
+                            'name': rest,
+                            'distance': round(
+                                distance.distance(
+                                    rest_coordinates,
+                                    valid_order_coordinates).km, 2)
+                        })
+                order.restaurants = sorted(restaurants_who_can_do,
+                                           key=lambda restaurant: restaurant[
+                                               'distance'])
+            else:
+                order.restaurants = None
 
     return render(request, template_name='order_items.html', context={
         'order_items': orders
     })
+
+
+def fetch_coordinates(address=None, apikey=settings.YANDEX_GEO_APIKEY):
+    base_url = "https://geocode-maps.yandex.ru/1.x"
+    response = requests.get(base_url, params={
+        "geocode": address,
+        "apikey": apikey,
+        "format": "json",
+    })
+    response.raise_for_status()
+    found_places = response.json()['response']['GeoObjectCollection'][
+        'featureMember']
+
+    if not found_places:
+        return None
+
+    most_relevant = found_places[0]
+    lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
+    return lat, lon
