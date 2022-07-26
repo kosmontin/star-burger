@@ -105,7 +105,12 @@ def view_orders(request):
     )
 
     orders = Order.objects.total_cost().exclude(
-        status='Done').prefetch_related('client', 'items')
+        status='Done').prefetch_related(
+        'client',
+        'items',
+        'address',
+        'which_restaurant_doing'
+    )
     for order in orders:
         valid_order_coordinates = order.address.lon, order.address.lat
         if order.status == 'New':
