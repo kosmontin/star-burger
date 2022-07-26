@@ -1,5 +1,4 @@
 import requests
-from django.contrib import messages
 from django.db import models
 
 from star_burger import settings

@@ -3,16 +3,20 @@ from django.db import models
 from django.db.models import Sum, F
 from django.utils import timezone
 
+import geodata.models
+
 
 class Restaurant(models.Model):
     name = models.CharField(
         'название',
         max_length=50
     )
-    address = models.CharField(
-        'адрес',
-        max_length=100,
+    address = models.ForeignKey(
+        geodata.models.Address,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
+        verbose_name='адрес',
     )
     contact_phone = models.CharField(
         'контактный телефон',
@@ -174,8 +178,9 @@ class Order(models.Model):
     client = models.ForeignKey(
         Client, on_delete=models.SET_NULL, null=True,
         related_name='orders', verbose_name='клиент')
-    address = models.TextField(
-        db_index=True, verbose_name='адрес доставки заказа')
+    address = models.ForeignKey(
+        geodata.models.Address, on_delete=models.SET_NULL,
+        null=True, blank=True, verbose_name='адрес доставки заказа')
     comment = models.TextField(null=True, blank=True,
                                verbose_name='комментарий')
     which_restaurant_doing = models.ForeignKey(
