@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.conf import settings
+from star_burger import settings
 
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
