@@ -181,7 +181,7 @@ class Order(models.Model):
     address = models.ForeignKey(
         geodata.models.Address, on_delete=models.PROTECT,
         verbose_name='адрес доставки заказа')
-    comment = models.TextField(null=True, blank=True,
+    comment = models.TextField(blank=True, default='',
                                verbose_name='комментарий')
     which_restaurant_doing = models.ForeignKey(
         Restaurant, on_delete=models.SET_NULL, null=True, blank=True,
