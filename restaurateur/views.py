@@ -112,37 +112,40 @@ def view_orders(request):
         'which_restaurant_cooking'
     )
     for order in orders:
+        if order.status != 'New':
+            continue
         valid_order_coordinates = order.address.lon, order.address.lat
-        if order.status == 'New':
-            available_rests = dict()
-            for order_product in order.items.all():
-                for menu_item in menu:
-                    if order_product.product_id == menu_item['product_id']:
-                        available_rests.setdefault(
-                            menu_item['restaurant__name'],
-                            [0, [
-                                menu_item['restaurant__address__lon'],
-                                menu_item['restaurant__address__lat']]
-                             ])
-                        available_rests[menu_item['restaurant__name']][0] += 1
+        available_rests = dict()
 
-            restaurants_who_can_do = []
-            if valid_order_coordinates:
-                for rest, values in available_rests.items():
-                    rest_coordinates = values[1]
-                    if values[0] == order.items.count():
-                        restaurants_who_can_do.append({
-                            'name': rest,
-                            'distance': round(
-                                distance.distance(
-                                    rest_coordinates,
-                                    valid_order_coordinates).km, 2)
-                        })
-                order.restaurants = sorted(restaurants_who_can_do,
-                                           key=lambda restaurant: restaurant[
-                                               'distance'])
-            else:
-                order.restaurants = None
+        for order_product in order.items.all():
+            for menu_item in menu:
+                if order_product.product_id == menu_item['product_id']:
+                    available_rests.setdefault(
+                        menu_item['restaurant__name'],
+                        [0,
+                         [menu_item['restaurant__address__lon'],
+                          menu_item['restaurant__address__lat']]
+                         ])
+                    available_rests[menu_item['restaurant__name']][0] += 1
+
+        restaurants_who_can_do = []
+        if not valid_order_coordinates:
+            order.restaurants = None
+            continue
+            
+        for rest, values in available_rests.items():
+            rest_coordinates = values[1]
+            if values[0] == order.items.count():
+                restaurants_who_can_do.append(
+                    {
+                        'name': rest,
+                        'distance': round(distance.distance(
+                            rest_coordinates,
+                            valid_order_coordinates).km, 2)
+                    })
+        order.restaurants = sorted(
+            restaurants_who_can_do,
+            key=lambda restaurant: restaurant['distance'])
 
     return render(request, template_name='order_items.html', context={
         'order_items': orders
