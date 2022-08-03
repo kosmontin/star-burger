@@ -153,7 +153,7 @@ class OrderAdmin(admin.ModelAdmin):
             return res
 
     def get_form(self, request, obj=None, change=False, **kwargs):
-        form = super(OrderAdmin, self).get_form(request, obj, **kwargs)
+        form = super().get_form(request)
         qs = Restaurant.objects.filter(
             menu_items__product_id__in=obj.items.values('product')).annotate(
             rest_counter=Count('menu_items__restaurant_id')).filter(
