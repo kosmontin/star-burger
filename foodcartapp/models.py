@@ -2,6 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Sum, F
 from django.utils import timezone
+from phonenumber_field.modelfields import PhoneNumberField
 
 import geodata.models
 
@@ -134,8 +135,11 @@ class Client(models.Model):
     lastname = models.CharField(
         verbose_name='Фамилия', max_length=50, db_index=True)
 
-    phonenumber = models.CharField(
-        db_index=True, max_length=20, verbose_name='телефон для связи')
+    phonenumber = PhoneNumberField(
+        db_index=True, max_length=20,
+        region='RU', verbose_name='телефон для связи')
+    # phonenumber = models.CharField(
+    #     db_index=True, max_length=20, verbose_name='телефон для связи')
 
     class Meta:
         verbose_name = 'Клиент'
