@@ -202,7 +202,7 @@ class Order(models.Model):
 class OrderPoint(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.PROTECT,
-        related_name='orders', verbose_name='товар')
+        related_name='order_points', verbose_name='товар')
     price = models.DecimalField(
         max_digits=8, decimal_places=2,
         validators=[MinValueValidator(0), ],
