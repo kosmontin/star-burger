@@ -134,12 +134,9 @@ class Client(models.Model):
     firstname = models.CharField(verbose_name='Имя', max_length=50)
     lastname = models.CharField(
         verbose_name='Фамилия', max_length=50, db_index=True)
-
     phonenumber = PhoneNumberField(
         db_index=True, max_length=20,
         region='RU', verbose_name='телефон для связи')
-    # phonenumber = models.CharField(
-    #     db_index=True, max_length=20, verbose_name='телефон для связи')
 
     class Meta:
         verbose_name = 'Клиент'
