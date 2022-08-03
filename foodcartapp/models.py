@@ -179,8 +179,8 @@ class Order(models.Model):
         Client, on_delete=models.SET_NULL, null=True,
         related_name='orders', verbose_name='клиент')
     address = models.ForeignKey(
-        geodata.models.Address, on_delete=models.SET_NULL,
-        null=True, blank=True, verbose_name='адрес доставки заказа')
+        geodata.models.Address, on_delete=models.PROTECT,
+        verbose_name='адрес доставки заказа')
     comment = models.TextField(null=True, blank=True,
                                verbose_name='комментарий')
     which_restaurant_doing = models.ForeignKey(
