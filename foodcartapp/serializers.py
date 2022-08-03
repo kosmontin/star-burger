@@ -2,7 +2,7 @@ import phonenumbers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 
-from .models import Client, Order, OrderPoint
+from .models import Client, Order, OrderItem
 
 
 class ClientSerializer(ModelSerializer):
@@ -23,19 +23,19 @@ class ClientSerializer(ModelSerializer):
         return client
 
 
-class OrderPointSerializer(ModelSerializer):
+class OrderItemSerializer(ModelSerializer):
     class Meta:
-        model = OrderPoint
+        model = OrderItem
         fields = ('product', 'quantity', 'price')
 
     def create(self, validated_data):
         validated_data['price'] = validated_data['product'].price
 
-        return OrderPoint.objects.create(**validated_data)
+        return OrderItem.objects.create(**validated_data)
 
 
 class OrderSerializer(ModelSerializer):
-    items = OrderPointSerializer(many=True, read_only=True)
+    items = OrderItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order

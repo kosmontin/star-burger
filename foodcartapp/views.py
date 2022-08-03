@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from .models import Order, Product
 from .serializers import ClientSerializer, OrderSerializer, \
-    OrderPointSerializer
+    OrderItemSerializer
 
 
 def banners_list_api(request):
@@ -83,12 +83,12 @@ class RegisterOrderAPIView(APIView):
             raise ValidationError(
                 'products: field required and must be not empty.')
 
-        order_points = OrderPointSerializer(data=products, many=True)
-        order_points.is_valid(raise_exception=True)
+        order_items = OrderItemSerializer(data=products, many=True)
+        order_items.is_valid(raise_exception=True)
 
         with transaction.atomic():
             client = client_serializer.save()
             order = order_serializer.save(client=client)
-            order_points.save(order=order)
+            order_items.save(order=order)
 
         return Response({'order': order_serializer.data})

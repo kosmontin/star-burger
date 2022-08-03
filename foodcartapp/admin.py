@@ -13,7 +13,7 @@ from .models import Restaurant
 from .models import RestaurantMenuItem
 from .models import Client
 from .models import Order
-from .models import OrderPoint
+from .models import OrderItem
 
 
 class OrderInline(admin.StackedInline):
@@ -21,8 +21,8 @@ class OrderInline(admin.StackedInline):
     extra = 0
 
 
-class OrderPointInline(admin.StackedInline):
-    model = OrderPoint
+class OrderItemInline(admin.StackedInline):
+    model = OrderItem
     extra = 0
 
 
@@ -138,7 +138,7 @@ class OrderAdmin(admin.ModelAdmin):
               'get_phonenumber', 'address', 'comment')
     radio_fields = {'status': admin.VERTICAL}
     readonly_fields = ['registered_at', 'client', 'get_phonenumber', 'address']
-    inlines = [OrderPointInline]
+    inlines = [OrderItemInline]
 
     @admin.display(description='Номер телефона')
     def get_phonenumber(self, obj):
