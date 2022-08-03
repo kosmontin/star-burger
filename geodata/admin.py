@@ -33,3 +33,14 @@ class AddressAdmin(admin.ModelAdmin):
             messages.add_message(
                 request, messages.ERROR, 'Ошибка обновления геоданных')
         return res
+
+    def save_model(self, request, obj, form, change):
+        try:
+            lat, lon = fetch_coordinates(address=obj.address)
+            obj.lat = lat
+            obj.lon = lon
+        except:
+            messages.add_message(
+                request, messages.ERROR, 'Ошибка обновления геоданных')
+        finally:
+            obj.save()

@@ -17,16 +17,6 @@ class Address(models.Model):
     def __str__(self):
         return self.address
 
-    def save(self, *args, **kwargs):
-        if not self.lon and not self.lat:
-            try:
-                lat, lon = fetch_coordinates(address=self.address)
-                self.lat = lat
-                self.lon = lon
-            except:
-                print('Error! Can\'t get geo data')
-        return super().save(*args, **kwargs)
-
 
 def fetch_coordinates(address=None, apikey=settings.YANDEX_GEO_APIKEY):
     base_url = "https://geocode-maps.yandex.ru/1.x"
