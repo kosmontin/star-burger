@@ -133,7 +133,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    fields = ('status', 'which_restaurant_doing', 'registered_at', 'called_at',
+    fields = ('status', 'which_restaurant_cooking', 'registered_at', 'called_at',
               'delivered_at', 'payment_method', 'client',
               'get_phonenumber', 'address', 'comment')
     radio_fields = {'status': admin.VERTICAL}
@@ -158,5 +158,5 @@ class OrderAdmin(admin.ModelAdmin):
             menu_items__product_id__in=obj.items.values('product')).annotate(
             rest_counter=Count('menu_items__restaurant_id')).filter(
             rest_counter__gte=obj.items.count())
-        form.base_fields['which_restaurant_doing'].queryset = qs
+        form.base_fields['which_restaurant_cooking'].queryset = qs
         return form

@@ -183,7 +183,7 @@ class Order(models.Model):
         verbose_name='адрес доставки заказа')
     comment = models.TextField(blank=True, default='',
                                verbose_name='комментарий')
-    which_restaurant_doing = models.ForeignKey(
+    which_restaurant_cooking = models.ForeignKey(
         Restaurant, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='processed_orders',
         verbose_name='какой ресторан готовит заказ'

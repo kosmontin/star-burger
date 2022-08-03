@@ -109,7 +109,7 @@ def view_orders(request):
         'client',
         'items',
         'address',
-        'which_restaurant_doing'
+        'which_restaurant_cooking'
     )
     for order in orders:
         valid_order_coordinates = order.address.lon, order.address.lat
