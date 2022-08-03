@@ -206,7 +206,7 @@ class OrderPoint(models.Model):
     price = models.DecimalField(
         max_digits=8, decimal_places=2,
         validators=[MinValueValidator(0), ],
-        default=0, verbose_name='цена')
+        verbose_name='цена')
     quantity = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(20)],
         default=1, verbose_name='количество')
