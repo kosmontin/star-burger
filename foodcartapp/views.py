@@ -63,11 +63,6 @@ def product_list_api(request):
 
 
 class RegisterOrderAPIView(APIView):
-    def get(self, request):
-        orders = Order.objects.all()
-        orders_serializer = OrderSerializer(orders, many=True)
-        return Response({'orders': orders_serializer.data})
-
     def post(self, request):
         client_serializer = ClientSerializer(data=request.data)
         client_serializer.is_valid(raise_exception=True)
