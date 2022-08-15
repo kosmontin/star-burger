@@ -177,7 +177,7 @@ class Order(models.Model):
         max_length=15, choices=PAYMENT_METHOD, db_index=True,
         default='undefined', verbose_name='способ оплаты')
     client = models.ForeignKey(
-        Client, on_delete=models.SET_NULL, null=True,
+        Client, on_delete=models.PROTECT,
         related_name='orders', verbose_name='клиент')
     address = models.ForeignKey(
         geodata.models.Address, on_delete=models.PROTECT,
