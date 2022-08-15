@@ -5,7 +5,8 @@ from star_burger import settings
 
 
 class Address(models.Model):
-    address = models.TextField(verbose_name='адрес', unique=True)
+    address = models.CharField(
+        max_length=100, verbose_name='адрес', unique=True)
     lon = models.FloatField(verbose_name='долгота', null=True, blank=True)
     lat = models.FloatField(verbose_name='широта', null=True, blank=True)
     updated_at = models.DateField('дата обновления', auto_now=True)
