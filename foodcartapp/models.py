@@ -1,6 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Count
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -149,6 +149,14 @@ class OrderQuerySet(models.QuerySet):
     def total_cost(self):
         return self.annotate(
             total_cost=Sum(F('items__quantity') * F('items__price')))
+
+    def which_rest_can_process_in_full(self, pk):
+        items = OrderItem.objects.filter(order=pk).values('product')
+        restaurants = Restaurant.objects.filter(
+            menu_items__product_id__in=items).annotate(
+            rest_counter=Count('menu_items__restaurant')).filter(
+            rest_counter__gte=items.count())
+        return restaurants
 
 
 class Order(models.Model):

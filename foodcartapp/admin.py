@@ -154,9 +154,6 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request)
-        qs = Restaurant.objects.filter(
-            menu_items__product_id__in=obj.items.values('product')).annotate(
-            rest_counter=Count('menu_items__restaurant_id')).filter(
-            rest_counter__gte=obj.items.count())
+        qs = Order.objects.which_rest_can_process_in_full(obj)
         form.base_fields['which_restaurant_cooking'].queryset = qs
         return form
