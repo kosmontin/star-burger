@@ -154,6 +154,6 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request)
-        qs = Order.objects.which_rest_can_process_in_full(obj)
+        qs = Order.objects.filter(pk=obj.pk).which_rest_can_process_in_full()
         form.base_fields['which_restaurant_cooking'].queryset = qs
         return form
