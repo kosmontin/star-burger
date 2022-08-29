@@ -97,13 +97,11 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.total_cost().exclude(
-        status='Done').prefetch_related(
-        'client',
-        'items',
-        'address',
-        'which_restaurant_cooking'
-    )
+    orders = Order.objects.total_cost()\
+        .exclude(status='Done')\
+        .prefetch_related(
+        'client', 'items', 'address', 'which_restaurant_cooking')\
+        .which_rest_can_process_in_full()
     for order in orders:
         if order.status != 'New':
             continue
@@ -114,14 +112,11 @@ def view_orders(request):
             continue
 
         restaurants_who_can_do = []
-        for restaurant in Order.objects.filter(pk=order.pk)\
-                .which_rest_can_process_in_full()\
-                .values('name', 'address__lon', 'address__lat'):
-            rest_coordinates = restaurant['address__lon'], \
-                               restaurant['address__lat']
+        for restaurant in order.restaurants:
+            rest_coordinates = restaurant.address.lon, restaurant.address.lat
             restaurants_who_can_do.append(
                 {
-                    'name': restaurant['name'],
+                    'name': restaurant.name,
                     'distance': round(distance.distance(
                         rest_coordinates,
                         valid_order_coordinates).km, 2)

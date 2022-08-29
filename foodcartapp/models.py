@@ -151,12 +151,14 @@ class OrderQuerySet(models.QuerySet):
             total_cost=Sum(F('items__quantity') * F('items__price')))
 
     def which_rest_can_process_in_full(self):
-        items = self.values('items__product')
-        restaurants = Restaurant.objects.filter(
-            menu_items__product_id__in=items).annotate(
-            rest_counter=Count('menu_items__restaurant')).filter(
-            rest_counter__gte=items.count())
-        return restaurants
+        for order in self:
+            products = order.items.values('product_id')
+            restaurants = Restaurant.objects.filter(
+                menu_items__product_id__in=products).annotate(
+                rest_counter=Count('menu_items__restaurant')).filter(
+                rest_counter__gte=products.count())
+            order.restaurants = restaurants
+        return self
 
 
 class Order(models.Model):
