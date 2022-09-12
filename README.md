@@ -54,14 +54,30 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-Определите переменную окружения `SECRET_KEY`. Создать файл `.env` в каталоге `star_burger/` и положите туда такой код:
+Определите переменные окружения. Для это создайте файл `.env` в каталоге `star_burger/` и заполните его.
+Для это воспользуйтесь шаблоном: файл `.env_EXAMPLE` расположен в корне проекта.
+В случае отсутствия, пример заполнения файла:
 ```sh
+## core Django section ##
+DEBUG=True
+## Use interactive shell in Django to generate a key
+## from django.core.management.utils import get_random_secret_key
+## get_random_secret_key()
 SECRET_KEY=django-insecure-0if40nf4nf93n4
-```
+## https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts
+ALLOWED_HOSTS=127.0.0.1,localhost
 
-Так же в этом файле определите переменную окружения `YANDEX_GEO_APIKEY` и присвойте ей значение. <br>
-Данная переменная хранит в себе API-ключ для доступа к сервису HTTP геокодера Яндекса. <br>
-Для его получения необходимо самостоятельно зарегистрироваться и сгенерировать ключ доступа в [Кабинете разработчика](https://developer.tech.yandex.ru/services/).
+## Yandex geocoder section ##
+## To get API key go to https://yandex.ru/dev/maps/geocoder/ ##
+YANDEX_GEO_APIKEY=
+
+## Rollbar section ##
+## Docs link: https://docs.rollbar.com/docs/django ##
+ROLLBAR_KEY=
+## choose between 'development' and 'production'
+ROLLBAR_ENVIRONMENT=development
+
+```
 
 
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
@@ -147,12 +163,13 @@ Parcel будет следить за файлами в каталоге `bundle
 ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
 ```
 
-Настроить бэкенд: создать файл `.env` в каталоге `star_burger/` со следующими настройками:
+Настроить бэкенд: создать файл `.env` в каталоге `star_burger/`.
+Подробности настройки данного файла были описаны выше.
+Для production-среды необходимо будет внести изменения в следующие ключи:
 
-- `DEBUG` — дебаг-режим. Поставьте `False`.
-- `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
-- `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
-- `YANDEX_GEO_APIKEY` — API-ключ для работы сервиса HTTP геокодера Яндекса. Подробности получения ключа в [Кабинете разработчика](https://developer.tech.yandex.ru/services/).
+- `DEBUG` — дебаг-режим. Поставить `False`.
+- `ALLOWED_HOSTS` — указать реальный домен проекта
+- `ROLLBAR_ENVIRONMENT` — установить в `production`
 
 
 ## Цели проекта
