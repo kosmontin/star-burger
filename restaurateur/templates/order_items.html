@@ -30,7 +30,7 @@
         <td>{{ item.pk }}</td>
         <td>{{ item.get_status_display }}</td>
         <td>{{ item.get_payment_method_display }}</td>
-        <td>{{ item.total_cost }} руб.</td>
+        <td>{{ item.total_cost|default_if_none:"0" }} руб.</td>
         <td>{{ item.client }}</td>
         <td>{{ item.client.phonenumber }}</td>
         <td>{{ item.address }}</td>

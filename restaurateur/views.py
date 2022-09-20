@@ -98,10 +98,11 @@ def view_restaurants(request):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     orders = Order.objects.total_cost()\
-        .exclude(status='Done')\
+        .exclude(status='Done').order_by('status')\
         .prefetch_related(
         'client', 'items', 'address', 'which_restaurant_cooking')\
         .which_rest_can_process_in_full()
+
     for order in orders:
         if order.status != 'New':
             continue

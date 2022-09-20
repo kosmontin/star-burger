@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='order',
             name='address',
-            field=models.TextField(db_index=True, null=True, verbose_name='адрес доставки заказа'),
+            field=models.TextField(null=True, verbose_name='адрес доставки заказа'),
         ),
     ]

@@ -58,7 +58,9 @@ pip install -r requirements.txt
 Для это воспользуйтесь шаблоном: файл `.env_EXAMPLE` расположен в корне проекта.
 В случае отсутствия, пример заполнения файла:
 ```sh
+#########################
 ## core Django section ##
+#########################
 DEBUG=True
 ## Use interactive shell in Django to generate a key
 ## from django.core.management.utils import get_random_secret_key
@@ -66,16 +68,23 @@ DEBUG=True
 SECRET_KEY=django-insecure-0if40nf4nf93n4
 ## https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts
 ALLOWED_HOSTS=127.0.0.1,localhost
+## All URL schemas are located at the following address https://github.com/jazzband/dj-database-url#url-schema
+DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME
 
+#############################
 ## Yandex geocoder section ##
+#############################
 ## To get API key go to https://yandex.ru/dev/maps/geocoder/ ##
 YANDEX_GEO_APIKEY=
 
+#####################
 ## Rollbar section ##
+#####################
 ## Docs link: https://docs.rollbar.com/docs/django ##
 ROLLBAR_KEY=
 ## choose between 'development' and 'production'
 ROLLBAR_ENVIRONMENT=development
+
 
 ```
 

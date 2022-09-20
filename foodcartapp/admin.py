@@ -133,8 +133,8 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    fields = ('status', 'which_restaurant_cooking', 'registered_at', 'called_at',
-              'delivered_at', 'payment_method', 'client',
+    fields = ('status', 'which_restaurant_cooking', 'registered_at',
+              'called_at', 'delivered_at', 'payment_method', 'client',
               'get_phonenumber', 'address', 'comment')
     radio_fields = {'status': admin.VERTICAL}
     readonly_fields = ['registered_at', 'client', 'get_phonenumber', 'address']
@@ -155,5 +155,7 @@ class OrderAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request)
         qs = Order.objects.filter(pk=obj.pk).which_rest_can_process_in_full()
-        form.base_fields['which_restaurant_cooking'].queryset = qs
+        form.base_fields[
+            'which_restaurant_cooking'
+        ].queryset = qs[0].restaurants if qs.count() else None
         return form
