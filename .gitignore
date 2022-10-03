@@ -1,6 +1,7 @@
 #IDE
 .idea/
 
+
 bundles/**
 node_modules/
 media/
