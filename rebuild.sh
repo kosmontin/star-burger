@@ -7,7 +7,11 @@ then
 echo "Uncommited changes are present. Use <git status> in bash to show more details"
 exit 1
 fi
-git pull
+if [[ $(git pull) == *"Already up to date"* ]]
+then
+echo "Nothing to update"
+exit 1
+fi
 . ./venv/bin/activate
 pip install -r requirements.txt
 npm ci
@@ -16,6 +20,6 @@ npm ci
 ./manage.py migrate
 sudo systemctl restart gunicorn.service
 sudo systemctl reload nginx.service
-echo "rebuild project completed"
+echo "Rebuild project completed"
 deactivate
 
