@@ -1,3 +1,6 @@
+#local bash script
+rebuild.sh
+
 #IDE
 .idea/
 
