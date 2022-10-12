@@ -5,13 +5,16 @@ cd /opt/projects/star-burger/
 if [[ $(git status) != *"nothing to commit, working tree clean"* ]]
 then
 echo "Uncommited changes are present. Use <git status> in bash to show more details"
-exit 1
+exit 0
 fi
 if [[ $(git pull) == *"Already up to date"* ]]
 then
 echo "Nothing to update"
-exit 1
+exit 0
 fi
+commit=$(git rev-parse --short HEAD)
+token='X-Rollbar-Access-Token: '$1
+curl --request POST --url https://api.rollbar.com/api/1/deploy --header $token --header 'accept: application/json' --header 'content-type: application/json' --data '{"environment": "production", "revision": $commit, "status": "started"}'
 . ./venv/bin/activate
 pip install -r requirements.txt
 npm ci
@@ -22,4 +25,5 @@ sudo systemctl restart gunicorn.service
 sudo systemctl reload nginx.service
 echo "Rebuild project completed"
 deactivate
+curl --request POST --url https://api.rollbar.com/api/1/deploy --header $token --header 'accept: application/json' --header 'content-type: application/json' --data '{"environment": "production", "revision": $commit, "status": "succeeded"}'
 
