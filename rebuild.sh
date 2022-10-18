@@ -18,7 +18,7 @@ pip install -r requirements.txt
 npm ci
 ./node_modules/.bin/parcel build bundles-src/index.js --dist-dir bundles --public-url="./"
 ./manage.py collectstatic --noinput
-./manage.py migrate
+./manage.py migrate --noinput
 sudo systemctl restart gunicorn.service
 sudo systemctl reload nginx.service
 deactivate
